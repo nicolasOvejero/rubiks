@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Chess</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+            width: 100vw;
+        }
+    </style>
+</head>
+
+<body>
+    <script src="./three.js"></script>
+    <script>
+        const generateCube = function(colors) {
+            const geometry = new THREE.BoxGeometry(2, 2, 2);
+            const positionAttribute = geometry.getAttribute('position');
+
+            const colorsArray = [];
+            const color = new THREE.Color();
+
+            // right at 0, 0
+            color.setHex(colors.right);
+            colorsArray.push(color.r, color.g, color.b);
+            colorsArray.push(color.r, color.g, color.b);
+            colorsArray.push(color.r, color.g, color.b);
+            colorsArray.push(color.r, color.g, color.b);
+
+            // left at 0, 0
+            color.setHex(colors.left);
+            colorsArray.push(color.r, color.g, color.b);
+            colorsArray.push(color.r, color.g, color.b);
+            colorsArray.push(color.r, color.g, color.b);
+            colorsArray.push(color.r, color.g, color.b);
+
+            // top at 0, 0
+            color.setHex(colors.top);
+            colorsArray.push(color.r, color.g, color.b);
+            colorsArray.push(color.r, color.g, color.b);
+            colorsArray.push(color.r, color.g, color.b);
+            colorsArray.push(color.r, color.g, color.b);
+
+
+            // bottom at 0, 0
+            color.setHex(colors.bottom);
+            colorsArray.push(color.r, color.g, color.b);
+            colorsArray.push(color.r, color.g, color.b);
+            colorsArray.push(color.r, color.g, color.b);
+            colorsArray.push(color.r, color.g, color.b);
+
+            // front at 0, 0
+            color.setHex(colors.front);
+            colorsArray.push(color.r, color.g, color.b);
+            colorsArray.push(color.r, color.g, color.b);
+            colorsArray.push(color.r, color.g, color.b);
+            colorsArray.push(color.r, color.g, color.b);
+
+            // back at 0, 0
+            color.setHex(colors.back);
+            colorsArray.push(color.r, color.g, color.b);
+            colorsArray.push(color.r, color.g, color.b);
+            colorsArray.push(color.r, color.g, color.b);
+            colorsArray.push(color.r, color.g, color.b);
+
+            geometry.setAttribute('color', new THREE.Float32BufferAttribute(colorsArray, 3));
+
+            return geometry;
+        }
+
+        const generateCubeAtPosition = function (colors, postion) {
+            const cube = generateCube(colors);
+            const cubeMesh = new THREE.Mesh(cube, material);
+            cubeMesh.position.set(postion.x, postion.y, postion.z);
+
+            return cubeMesh;
+        }
+
+        const drawCenterCubes = function (position) {
+            // White center
+            group.add(generateCubeAtPosition(
+                { right: 0x000000, left: 0x000000, top: 0x000000, bottom: 0x000000, front: 0xffffff, back: 0x000000 },
+                { x: 0, y: 0, z: position }
+            ));
+            // Blue center
+            group.add(generateCubeAtPosition(
+                { right: 0x000000, left: 0x1a3bbf, top: 0x000000, bottom: 0x000000, front: 0x000000, back: 0x000000 },
+                { x: -position, y: 0, z: 0 }
+            ));
+            // Blue green
+            group.add(generateCubeAtPosition(
+                { right: 0x52863e, left: 0x000000, top: 0x000000, bottom: 0x000000, front: 0x000000, back: 0x000000 },
+                { x: position, y: 0, z: 0 }
+            ));
+            // Yellow center
+            group.add(generateCubeAtPosition(
+                { right: 0x000000, left: 0x000000, top: 0x000000, bottom: 0x000000, front: 0x000000, back: 0xe5c628 },
+                { x: 0, y: 0, z: -position }
+            ));
+            // Red center
+            group.add(generateCubeAtPosition(
+                { right: 0x000000, left: 0x000000, top: 0xd11f22, bottom: 0x000000, front: 0x000000, back: 0x000000 },
+                { x: 0, y: position, z: 0 }
+            ));
+            // Orange center
+            group.add(generateCubeAtPosition(
+                { right: 0x000000, left: 0x000000, top: 0x000000, bottom: 0xd16b2c, front: 0x000000, back: 0x000000 },
+                { x: 0, y: -position, z: 0 }
+            ));
+        }
+
+        const drawOtherCubes = function (position) {
+            group.add(generateCubeAtPosition(
+                { right: 0x000000, left: 0x1a3bbf, top: 0xd11f22, bottom: 0x000000, front: 0xffffff, back: 0x000000 },
+                { x: -position, y: position, z: position }
+            ));
+            group.add(generateCubeAtPosition(
+                { right: 0x000000, left: 0x000000, top: 0xd11f22, bottom: 0x000000, front: 0xffffff, back: 0x000000 },
+                { x: 0, y: position, z: position }
+            ));
+            group.add(generateCubeAtPosition(
+                { right: 0x52863e, left: 0x000000, top: 0xd11f22, bottom: 0x000000, front: 0xffffff, back: 0x000000 },
+                { x: position, y: position, z: position }
+            ));
+            group.add(generateCubeAtPosition(
+                { right: 0x000000, left: 0x1a3bbf, top: 0x000000, bottom: 0x000000, front: 0xffffff, back: 0x000000 },
+                { x: -position, y: 0, z: position }
+            ));
+            group.add(generateCubeAtPosition(
+                { right: 0x52863e, left: 0x000000, top: 0x000000, bottom: 0x000000, front: 0xffffff, back: 0x000000 },
+                { x: position, y: 0, z: position }
+            ));
+            group.add(generateCubeAtPosition(
+                { right: 0x000000, left: 0x1a3bbf, top: 0x000000, bottom: 0xd16b2c, front: 0xffffff, back: 0x000000 },
+                { x: -position, y: -position, z: position }
+            ));
+            group.add(generateCubeAtPosition(
+                { right: 0x000000, left: 0x000000, top: 0x000000, bottom: 0xd16b2c, front: 0xffffff, back: 0x000000 },
+                { x: 0, y: -position, z: position }
+            ));
+            group.add(generateCubeAtPosition(
+                { right: 0x52863e, left: 0x000000, top: 0x000000, bottom: 0xd16b2c, front: 0xffffff, back: 0x000000 },
+                { x: position, y: -position, z: position }
+            ));
+            group.add(generateCubeAtPosition(
+                { right: 0x000000, left: 0x1a3bbf, top: 0xd11f22, bottom: 0x000000, front: 0x000000, back: 0x000000 },
+                { x: -position, y: position, z: 0 }
+            ));
+            group.add(generateCubeAtPosition(
+                { right: 0x000000, left: 0x1a3bbf, top: 0x000000, bottom: 0xd16b2c, front: 0x000000, back: 0x000000 },
+                { x: -position, y: -position, z: 0 }
+            ));
+            group.add(generateCubeAtPosition(
+                { right: 0x000000, left: 0x1a3bbf, top: 0xd11f22, bottom: 0x000000, front: 0x000000, back: 0xe5c628 },
+                { x: -position, y: position, z: -position }
+            ));
+            group.add(generateCubeAtPosition(
+                { right: 0x000000, left: 0x1a3bbf, top: 0x000000, bottom: 0x000000, front: 0x000000, back: 0xe5c628 },
+                { x: -position, y: 0, z: -position }
+            ));
+            group.add(generateCubeAtPosition(
+                { right: 0x000000, left: 0x1a3bbf, top: 0x000000, bottom: 0xd16b2c, front: 0x000000, back: 0xe5c628 },
+                { x: -position, y: -position, z: -position }
+            ));
+            group.add(generateCubeAtPosition(
+                { right: 0x52863e, left: 0x000000, top: 0xd11f22, bottom: 0x000000, front: 0x000000, back: 0x000000 },
+                { x: position, y: position, z: 0 }
+            ));
+            group.add(generateCubeAtPosition(
+                { right: 0x52863e, left: 0x000000, top: 0x000000, bottom: 0xd16b2c, front: 0x000000, back: 0x000000 },
+                { x: position, y: -position, z: 0 }
+            ));
+            group.add(generateCubeAtPosition(
+                { right: 0x52863e, left: 0x000000, top: 0xd11f22, bottom: 0x000000, front: 0x000000, back: 0xe5c628 },
+                { x: position, y: position, z: -position }
+            ));
+            group.add(generateCubeAtPosition(
+                { right: 0x52863e, left: 0x000000, top: 0x000000, bottom: 0x000000, front: 0x000000, back: 0xe5c628 },
+                { x: position, y: 0, z: -position }
+            ));
+            group.add(generateCubeAtPosition(
+                { right: 0x52863e, left: 0x000000, top: 0x000000, bottom: 0xd16b2c, front: 0x000000, back: 0xe5c628 },
+                { x: position, y: -position, z: -position }
+            ));
+            group.add(generateCubeAtPosition(
+                { right: 0x000000, left: 0x000000, top: 0xd11f22, bottom: 0x000000, front: 0x000000, back: 0xe5c628 },
+                { x: 0, y: position, z: -position }
+            ));
+            group.add(generateCubeAtPosition(
+                { right: 0x000000, left: 0x000000, top: 0x000000, bottom: 0xd16b2c, front: 0x000000, back: 0xe5c628 },
+                { x: 0, y: -position, z: -position }
+            ));
+        }
+
+        const updateCenterCubes = function (position) {
+            group.children[0].position.z = position;
+            group.children[1].position.x = -position;
+            group.children[2].position.x = position;
+            group.children[3].position.z = -position;
+            group.children[4].position.y = position;
+            group.children[5].position.y = -position;
+        }
+
+        const updateOtherCubes = function (position) {
+            group.children[ 6 ].position.x = -position;
+            group.children[ 6 ].position.y = position;
+            group.children[ 6 ].position.z = position;
+
+            group.children[ 7 ].position.y = position;
+            group.children[ 7 ].position.z = position;
+
+            group.children[ 8 ].position.x = position;
+            group.children[ 8 ].position.y = position;
+            group.children[ 8 ].position.z = position;
+
+            group.children[ 9 ].position.x = -position;
+            group.children[ 9 ].position.z = position;
+
+            group.children[ 10 ].position.x = position;
+            group.children[ 10 ].position.z = position;
+
+            group.children[ 11 ].position.x = -position;
+            group.children[ 11 ].position.y = -position;
+            group.children[ 11 ].position.z = position;
+
+            group.children[ 12 ].position.y = -position;
+            group.children[ 12 ].position.z = position;
+
+            group.children[ 13 ].position.x = position;
+            group.children[ 13 ].position.y = -position;
+            group.children[ 13 ].position.z = position;
+
+            group.children[ 14 ].position.x = -position;
+            group.children[ 14 ].position.y = position;
+
+            group.children[ 15 ].position.x = -position;
+            group.children[ 15 ].position.y = -position;
+
+            group.children[ 16 ].position.x = -position;
+            group.children[ 16 ].position.y = position;
+            group.children[ 16 ].position.z = -position;
+
+            group.children[ 17 ].position.x = -position;
+            group.children[ 17 ].position.z = -position;
+
+            group.children[ 18 ].position.x = -position;
+            group.children[ 18 ].position.y = -position;
+            group.children[ 18 ].position.z = -position;
+
+            group.children[ 19 ].position.x = position;
+            group.children[ 19 ].position.y = position;
+
+            group.children[ 20 ].position.x = position;
+            group.children[ 20 ].position.y = -position;
+
+            group.children[ 21 ].position.x = position;
+            group.children[ 21 ].position.y = position;
+            group.children[ 21 ].position.z = -position;
+
+            group.children[ 22 ].position.x = position;
+            group.children[ 22 ].position.z = -position;
+
+            group.children[ 23 ].position.x = position;
+            group.children[ 23 ].position.y = -position;
+            group.children[ 23 ].position.z = -position;
+
+            group.children[ 24 ].position.y = position;
+            group.children[ 24 ].position.z = -position;
+
+            group.children[ 25 ].position.y = -position;
+            group.children[ 25 ].position.z = -position;
+        }
+
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x444444);
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setPixelRatio(window.devicePixelRatio);
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        let initialCameraZ = 45;
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 100);
+        camera.position.z = initialCameraZ;
+
+        const material = new THREE.MeshBasicMaterial({
+            vertexColors: true,
+            transparent: true
+        });
+
+        const group = new THREE.Group();
+
+        let defaultCenterPosition = 61.1;
+        let defaultOtherPosition = 61.1;
+        let initialGroupX = 0.5;
+        let initialGroupY = 0.5;
+
+        function animateCameraZ() {
+            initialCameraZ -= 1;
+
+            if (initialCameraZ > 15) {
+                requestAnimationFrame(animateCameraZ);
+                camera.position.z = initialCameraZ;
+                renderer.render(scene, camera);
+            } else {
+                animateGroupX();
+            }
+        }
+
+        function animateGroupY() {
+            initialGroupY += 0.05;
+
+            if (initialGroupY < 6.5){
+                requestAnimationFrame(animateGroupY);
+                group.rotation.y = initialGroupY;
+                renderer.render(scene, camera);
+            }
+        }
+
+        function animateGroupX() {
+            initialGroupX += 0.05;
+
+            if (initialGroupX < 6.5){
+                requestAnimationFrame(animateGroupX);
+                group.rotation.x = initialGroupX;
+                renderer.render(scene, camera);
+            } else {
+                animateGroupY();
+            }
+        }
+
+        function animateOther() {
+            defaultOtherPosition -= 1;
+
+            if (defaultOtherPosition > 2.1){
+                requestAnimationFrame(animateOther);
+                updateOtherCubes(defaultOtherPosition);
+                renderer.render(scene, camera);
+            } else {
+                animateCameraZ();
+            }
+        }
+
+        function animateCenter() {
+            defaultCenterPosition -= 1;
+            if (defaultCenterPosition > 2.1){
+                requestAnimationFrame(animateCenter);
+                updateCenterCubes(defaultCenterPosition);
+                renderer.render(scene, camera);
+            } else {
+                animateOther();
+            }
+        }
+
+        drawCenterCubes(defaultCenterPosition);
+        drawOtherCubes(updateOtherCubes);
+
+        scene.add(group);
+
+        animateCenter();
+
+        group.rotation.x += initialGroupX;
+        group.rotation.y += initialGroupY;
+        renderer.render(scene, camera);
+    </script>
+</body>
+
+</html>
